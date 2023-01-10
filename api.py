@@ -26,6 +26,37 @@ def index():
 
     return users_data
 
+
+def query_database(query, search_param):
+    with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cursor:
+        try:
+            cursor.execute(query, (search_param,))
+            return cursor.fetchall()
+        except(Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn:
+                cursor.close()
+    
+@app.route("/getUserQR", methods=['GET'])
+def getUserQR():
+    args =  request.args
+    if "userName" in args:
+        userName = args["userName"]
+        print(userName)
+        qrCode  = query_database(
+                """WITH userQR AS ( 
+                    SELECT cards.user_id, 
+                    cards.id, 
+                    users.username 
+                    FROM cards, users WHERE users.id=cards.user_id
+                ) 
+                SELECT id from userQR WHERE username=%s""", userName)
+        print(qrCode)
+        return jsonify(qrCode)
+    else:
+        return jsonify({status : 400, reason: "invalid"})
+
 @app.route("/view-card", methods=['GET'])
 def view_card():
 
@@ -39,3 +70,4 @@ def view_card():
     cur.close()
 
     return card_data
+
