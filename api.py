@@ -2,8 +2,10 @@ import psycopg2
 import psycopg2.extras as pse  # We'll need this to convert SQL responses into dictionaries
 from flask import Flask, current_app, request, jsonify
 from flask_cors import CORS
+import bcrypt
 from dotenv import load_dotenv
 import os
+
 
 app=Flask(__name__)
 CORS(app)
@@ -120,5 +122,21 @@ def register_user():
     except:
         return 'Failed to Register user', 500
 
+@app.route("/login", methods=['POST'])
+def login_user():
+    data =  request.json
+    user_name = data['username']
+    password = data['password']
+    
+    query = "SELECT * FROM users WHERE username = %s AND hashedpw = %s"
+    parameters = (user_name, password)    
+    
+    user_data = query_database(query, parameters)
+    if(len(user_data)>= 1):
+        return "success", 200
+        #do something
+    else:
+        return "username or password incorrect", 40
+    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
