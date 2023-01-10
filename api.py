@@ -84,14 +84,14 @@ def view_card():
 @app.route("/create-card", methods=['POST'])
 def create_card():
     data = request.json
-    userName = data['userName']
+    user_name = data['userName']
     title = data['title']
     colour = data['colour']
     content = data['content']
     query = """
     INSERT INTO cards(user_id, title, colour, content)
     VALUES ((SELECT id FROM users WHERE username=%s), %s, %s, %s);"""
-    parameters = (userName, title, colour, content)
+    parameters = (user_name, title, colour, content)
     try:
         insert_database(query, parameters)
         return 'added card', 200
