@@ -26,12 +26,22 @@ def index():
 
     return users_data
 
-
 def query_database(query, search_param):
     with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cursor:
         try:
-            cursor.execute(query, (search_param,))
+            cursor.execute(query, search_param)
             return cursor.fetchall()
+        except(Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn:
+                cursor.close()
+
+def insert_database(query, search_param):
+    with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cursor:
+        try:
+            cursor.execute(query, search_param)
+            conn.commit()
         except(Exception, psycopg2.DatabaseError) as error:
             print(error)
         finally:
@@ -51,7 +61,7 @@ def getUserQR():
                     users.username 
                     FROM cards, users WHERE users.id=cards.user_id
                 ) 
-                SELECT id from userQR WHERE username=%s""", userName)
+                SELECT id from userQR WHERE username=%s""", (userName,))
         print(qrCode)
         return jsonify(qrCode)
     else:
@@ -71,3 +81,22 @@ def view_card():
 
     return card_data
 
+@app.route("/create-card", methods=['POST'])
+def create_card():
+    data = request.json
+    user_name = data['userName']
+    title = data['title']
+    colour = data['colour']
+    content = data['content']
+    query = """
+    INSERT INTO cards(user_id, title, colour, content)
+    VALUES ((SELECT id FROM users WHERE username=%s), %s, %s, %s);"""
+    parameters = (user_name, title, colour, content)
+    try:
+        insert_database(query, parameters)
+        return 'added card', 200
+    except:
+        return 'failed to add card', 500
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
