@@ -24,3 +24,18 @@ def index():
     cur.close()
 
     return users_data
+
+@app.route("/view-card", methods=['GET'])
+def view_card():
+
+    args = request.args
+    qr_code = args.get('qr')
+
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=pse.RealDictCursor)
+    cur.execute("SELECT * FROM cards where id=%s", qr_code)
+
+    card_data = cur.fetchall()
+    cur.close()
+
+    return card_data
