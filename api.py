@@ -58,21 +58,22 @@ def insert_database(query, search_param):
 @app.route("/getUserQR", methods=['GET'])
 def getUserQR():
     args =  request.args
-    if "userName" in args:
-        userName = args["userName"]
-        print(userName)
-        qrCode  = query_database(
+    if "username" in args:
+        user_name = args["username"]
+        qr_code = query_database(
                 """WITH userQR AS ( 
                     SELECT cards.user_id, 
                     cards.id, 
                     users.username 
                     FROM cards, users WHERE users.id=cards.user_id
                 ) 
-                SELECT id from userQR WHERE username=%s""", (userName,))
-        print(qrCode)
-        return jsonify(qrCode)
+                SELECT id from userQR WHERE username=%s""", (user_name,))
+        if(qr_code == []):
+            return "404, failed: user does not exist", 404 
+        else:
+            return jsonify(qr_code), 200
     else:
-        return jsonify({status : 400, reason: "invalid"})
+        return "404, failed: no username provided", 404
 
 @app.route("/view-card", methods=['GET'])
 def view_card():
@@ -104,6 +105,20 @@ def create_card():
         return 'added card', 200
     except:
         return 'failed to add card', 500
+
+@app.route("/register-user", methods=['POST'])
+def register_user():
+    data = request.json
+    user_name = data['userName']
+    password = data['password']
+
+    query = "INSERT INTO users(username, hashedpw) VALUES (%s, %s)"
+    parameters = (user_name, password)
+    try:
+        insert_database(query, parameters)
+        return 'User Registered', 200
+    except:
+        return 'Failed to Register user', 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
