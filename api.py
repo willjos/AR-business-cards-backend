@@ -98,5 +98,19 @@ def create_card():
     except:
         return 'failed to add card', 500
 
+@app.route("/register-user", methods=['POST'])
+def register_user():
+    data = request.json
+    user_name = data['userName']
+    password = data['password']
+
+    query = "INSERT INTO users(username, hashedpw) VALUES (%s, %s)"
+    parameters = (user_name, password)
+    try:
+        insert_database(query, parameters)
+        return 'User Registered', 200
+    except:
+        return 'Failed to Register user', 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
