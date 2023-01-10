@@ -51,21 +51,22 @@ def insert_database(query, search_param):
 @app.route("/getUserQR", methods=['GET'])
 def getUserQR():
     args =  request.args
-    if "userName" in args:
-        userName = args["userName"]
-        print(userName)
-        qrCode  = query_database(
+    if "username" in args:
+        user_name = args["username"]
+        qr_code = query_database(
                 """WITH userQR AS ( 
                     SELECT cards.user_id, 
                     cards.id, 
                     users.username 
                     FROM cards, users WHERE users.id=cards.user_id
                 ) 
-                SELECT id from userQR WHERE username=%s""", (userName,))
-        print(qrCode)
-        return jsonify(qrCode)
+                SELECT id from userQR WHERE username=%s""", (user_name,))
+        if(qr_code == []):
+            return "404, failed: user does not exist", 404 
+        else:
+            return jsonify(qr_code), 200
     else:
-        return jsonify({status : 400, reason: "invalid"})
+        return "404, failed: no username provided", 404
 
 @app.route("/view-card", methods=['GET'])
 def view_card():
