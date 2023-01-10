@@ -13,10 +13,11 @@ def get_db_connection():
     except:
         print('Error Connecting to Database')
 
+conn = get_db_connection()
+
 @app.route("/", methods=['GET'])
 def index():
 
-    conn = get_db_connection()
     cur = conn.cursor(cursor_factory=pse.RealDictCursor)
     cur.execute("SELECT * FROM users")
 
@@ -31,7 +32,6 @@ def view_card():
     args = request.args
     qr_code = args.get('qr')
 
-    conn = get_db_connection()
     cur = conn.cursor(cursor_factory=pse.RealDictCursor)
     cur.execute("SELECT * FROM cards where id=%s", qr_code)
 
