@@ -83,10 +83,11 @@ def view_card():
 
 @app.route("/create-card", methods=['POST'])
 def create_card():
-    userName = request.json['userName']
-    title = request.json['title']
-    colour = request.json['colour']
-    content = request.json['content']
+    data = request.json
+    userName = data['userName']
+    title = data['title']
+    colour = data['colour']
+    content = data['content']
     query = """
     INSERT INTO cards(user_id, title, colour, content)
     VALUES ((SELECT id FROM users WHERE username=%s), %s, %s, %s);"""
