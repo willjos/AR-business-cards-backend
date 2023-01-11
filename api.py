@@ -2,10 +2,9 @@ import psycopg2
 import psycopg2.extras as pse  # We'll need this to convert SQL responses into dictionaries
 from flask import Flask, current_app, request, jsonify
 from flask_cors import CORS
-import bcrypt
 from dotenv import load_dotenv
 import os
-
+import bcrypt 
 
 app=Flask(__name__)
 CORS(app)
@@ -112,10 +111,13 @@ def create_card():
 def register_user():
     data = request.json
     user_name = data['userName']
-    password = data['password']
+    password = data['password'].encode('utf8')
+    salt = bcrypt.gensalt()
 
-    query = "INSERT INTO users(username, hashedpw) VALUES (%s, %s)"
-    parameters = (user_name, password)
+    hashed_password = bcrypt.hashpw(password, salt)
+    
+    query = "INSERT INTO users(username, password) VALUES (%s, %s)"
+    parameters = (user_name, hashed_password)
     try:
         insert_database(query, parameters)
         return 'User Registered', 200
@@ -134,9 +136,8 @@ def login_user():
     user_data = query_database(query, parameters)
     if(len(user_data)>= 1):
         return "success", 200
-        #do something
     else:
         return "username or password incorrect", 40
-    
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
