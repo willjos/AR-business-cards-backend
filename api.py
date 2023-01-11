@@ -2,10 +2,9 @@ import psycopg2
 import psycopg2.extras as pse  # We'll need this to convert SQL responses into dictionaries
 from flask import Flask, current_app, request, jsonify
 from flask_cors import CORS
-import bcrypt
 from dotenv import load_dotenv
 import os
-
+import bcrypt 
 
 app=Flask(__name__)
 CORS(app)
@@ -47,15 +46,19 @@ def query_database(query, search_param):
                 cursor.close()
 
 def insert_database(query, search_param):
+    message = None
     with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cursor:
         try:
             cursor.execute(query, search_param)
             conn.commit()
+            message = "success"
         except(Exception, psycopg2.DatabaseError) as error:
             print(error)
+            message = error
         finally:
             if conn:
                 cursor.close()
+            return message
     
 @app.route("/getUserQR", methods=['GET'])
 def getUserQR():
@@ -111,16 +114,19 @@ def create_card():
 @app.route("/register-user", methods=['POST'])
 def register_user():
     data = request.json
-    user_name = data['userName']
-    password = data['password']
+    user_name = data['username']
+    password = data['password'].encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password, salt).decode('utf-8')
 
     query = "INSERT INTO users(username, hashedpw) VALUES (%s, %s)"
-    parameters = (user_name, password)
-    try:
-        insert_database(query, parameters)
+    parameters = (user_name, hashed_password)
+
+    msg = insert_database(query, parameters)
+    if msg == "success":
         return 'User Registered', 200
-    except:
-        return 'Failed to Register user', 500
+    else:
+        return "bad", 500 
 
 @app.route("/login", methods=['POST'])
 def login_user():
@@ -128,15 +134,22 @@ def login_user():
     user_name = data['username']
     password = data['password']
     
-    query = "SELECT * FROM users WHERE username = %s AND hashedpw = %s"
-    parameters = (user_name, password)    
-    
-    user_data = query_database(query, parameters)
-    if(len(user_data)>= 1):
-        return "success", 200
-        #do something
+    query = "SELECT hashedpw FROM users WHERE username = %s"
+    parameters = (user_name,)    
+   
+    user_data = query_database(query, parameters) 
+
+    if(len(user_data) == 1):
+        print(user_data)
+        hashed_password = user_data[0]['hashedpw']
+        # hashed_password.encode("utf8")
+        print(hashed_password)
+        if(bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))):
+            return "success", 200
+        else:
+            return "Password Incorrect", 403
     else:
-        return "username or password incorrect", 40
-    
+        return "username or password incorrect", 403
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
