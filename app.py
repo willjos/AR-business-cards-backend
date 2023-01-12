@@ -84,7 +84,7 @@ def view_card():
 @app.route("/create-card", methods=['POST'])
 def create_card():
     data = request.json
-    user_name = data['userName']
+    user_name = data['username']
     title = data['title']
     colour = data['colour']
     content = data['content']
