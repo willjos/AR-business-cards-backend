@@ -1,18 +1,12 @@
 import psycopg2
-import psycopg2.extras as pse  # We'll need this to convert SQL responses into dictionaries
+import psycopg2.extras as pse
 from flask import Flask, current_app, request, jsonify
 from flask_cors import CORS
-# from dotenv import load_dotenv
 import os
 import bcrypt 
   
 app=Flask(__name__)
 CORS(app)
-
-# def configure():
-#     load_dotenv()
-
-# configure()
 
 def get_db_connection():
     try:
@@ -25,13 +19,10 @@ conn = get_db_connection()
 
 @app.route("/", methods=['GET'])
 def index():
-
     cur = conn.cursor(cursor_factory=pse.RealDictCursor)
     cur.execute("SELECT * FROM users")
-
     users_data = cur.fetchall()
     cur.close()
-
     return users_data
 
 def query_database(query, search_param):
@@ -82,16 +73,12 @@ def getUserQR():
 
 @app.route("/view-card", methods=['GET'])
 def view_card():
-
     args = request.args
     qr_code = args.get('qr')
-
     cur = conn.cursor(cursor_factory=pse.RealDictCursor)
     cur.execute("SELECT * FROM cards where id=%s", qr_code)
-
     card_data = cur.fetchall()
     cur.close()
-
     return card_data
 
 @app.route("/create-card", methods=['POST'])
@@ -118,10 +105,8 @@ def register_user():
     password = data['password'].encode('utf-8')
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password, salt).decode('utf-8')
-
     query = "INSERT INTO users(username, hashedpw) VALUES (%s, %s)"
     parameters = (user_name, hashed_password)
-
     msg = insert_database(query, parameters)
     if msg == "success":
         return 'User Registered', 200
@@ -133,16 +118,12 @@ def login_user():
     data =  request.json
     user_name = data['username']
     password = data['password']
-    
     query = "SELECT hashedpw FROM users WHERE username = %s"
     parameters = (user_name,)    
-   
     user_data = query_database(query, parameters) 
-
     if(len(user_data) == 1):
         print(user_data)
         hashed_password = user_data[0]['hashedpw']
-        # hashed_password.encode("utf8")
         print(hashed_password)
         if(bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))):
             return "success", 200
@@ -152,4 +133,4 @@ def login_user():
         return "username or password incorrect", 403
 
 if __name__ == '__main__':
-    app.run() 
+    app.run()
