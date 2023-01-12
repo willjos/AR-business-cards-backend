@@ -2,21 +2,21 @@ import psycopg2
 import psycopg2.extras as pse  # We'll need this to convert SQL responses into dictionaries
 from flask import Flask, current_app, request, jsonify
 from flask_cors import CORS
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 import bcrypt 
   
 app=Flask(__name__)
 CORS(app)
 
-def configure():
-    load_dotenv()
+# def configure():
+#     load_dotenv()
 
-configure()
+# configure()
 
 def get_db_connection():
     try:
-        conn = psycopg2.connect(f"dbname=zofajswl user=zofajswl password={os.getenv('db_password')} host=rogue.db.elephantsql.com port=5432")
+        conn = psycopg2.connect(f"dbname=zofajswl user=zofajswl password={os.getenv('DB_PASSWORD')} host=rogue.db.elephantsql.com port=5432")
         return conn
     except:
         print('Error Connecting to Database')
