@@ -1,10 +1,10 @@
 import psycopg2
 import psycopg2.extras as pse
-from flask import Flask, current_app, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import bcrypt 
-  
+
 app=Flask(__name__)
 CORS(app)
 
@@ -98,6 +98,27 @@ def create_card():
     except:
         return 'failed to add card', 500
 
+@app.route("/edit-card", methods=['PATCH'])
+def edit_card():
+    data = request.json
+    title = data['title']
+    colour = data['colour']
+    content = data['content']
+    user_name = data['username']
+    query = """
+    UPDATE cards
+    SET title = %s,
+        colour = %s,
+        content = %s
+    WHERE user_id = (SELECT id FROM users WHERE username=%s);
+    """
+    parameters = (title, colour, content, user_name)
+    try:
+        insert_database(query, parameters)
+        return 'edited card', 200
+    except:
+        return 'failed to edit card', 500
+
 @app.route("/register-user", methods=['POST'])
 def register_user():
     data = request.json
@@ -131,6 +152,3 @@ def login_user():
             return "Password Incorrect", 403
     else:
         return "username or password incorrect", 403
-
-if __name__ == '__main__':
-    app.run()
