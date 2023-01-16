@@ -16,6 +16,8 @@ Repo containing API for AR-business-cards project.
 
 '/create-card' - POST request that receives JSON containing username, title, colour, and content values and adds a card entry to the database. This will be used to store all business cards that are created by users.
 
+'/edit-card/<int:id>' - PATCH request that takes path parameter id, and edits the content of the card based on JSON data supplied by the frontend.
+
 '/register-user' - POST request that receives JSON containing username and password. This will add a new user to the database (usernames must be unique).
 
 '/login' - POST request that receives JSON containing username and password. This will check if the username and password match an existing user entry in the database and either allow or deny permission to the site.

@@ -98,8 +98,8 @@ def create_card():
     except:
         return 'failed to add card', 500
 
-@app.route("/edit-card", methods=['PATCH'])
-def edit_card():
+@app.route("/edit-card/<int:id>", methods=['PATCH'])
+def edit_card(id):
     data = request.json
     title = data['title']
     colour = data['colour']
@@ -110,9 +110,10 @@ def edit_card():
     SET title = %s,
         colour = %s,
         content = %s
-    WHERE user_id = (SELECT id FROM users WHERE username=%s);
+    WHERE user_id = (SELECT id FROM users WHERE username=%s)
+    AND cards.id = %s;
     """
-    parameters = (title, colour, content, user_name)
+    parameters = (title, colour, content, user_name, id)
     try:
         insert_database(query, parameters)
         return 'edited card', 200
