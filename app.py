@@ -10,11 +10,12 @@ CORS(app)
 
 def get_db_connection():
     try:
-        conn = psycopg2.connect(f"dbname=zofajswl user=zofajswl password={os.getenv('DB_PASSWORD')} host=rogue.db.elephantsql.com port=5432")
+        conn = psycopg2.connect(f"dbname=zofajswl user=zofajswl password=OO3MCdBFbnGQvSRqgaa6a_AXoQ3OSwa3 host=rogue.db.elephantsql.com port=5432")
         return conn
     except:
         print('Error Connecting to Database')
-
+# {os.getenv('DB_PASSWORD')}
+# OO3MCdBFbnGQvSRqgaa6a_AXoQ3OSwa3
 conn = get_db_connection()
 
 @app.route("/", methods=['GET'])
@@ -73,12 +74,10 @@ def getUserQR():
     else:
         return "404, failed: no username provided", 404
 
-@app.route("/view-card", methods=['GET'])
-def view_card():
-    args = request.args
-    qr_code = args.get('qr')
+@app.route("/view-card/<int:id>", methods=['GET'])
+def view_card(id):
     cur = conn.cursor(cursor_factory=pse.RealDictCursor)
-    cur.execute("SELECT * FROM cards where id=%s", qr_code)
+    cur.execute("SELECT * FROM cards where id=(%s);", (id, ))
     card_data = cur.fetchall()
     cur.close()
     return card_data
