@@ -10,11 +10,11 @@ CORS(app)
 
 def get_db_connection():
     try:
-        conn = psycopg2.connect(f"dbname=zofajswl user=zofajswl password=OO3MCdBFbnGQvSRqgaa6a_AXoQ3OSwa3 host=rogue.db.elephantsql.com port=5432")
+        conn = psycopg2.connect(f"dbname=zofajswl user=zofajswl password={os.getenv('DB_PASSWORD')} host=rogue.db.elephantsql.com port=5432")
         return conn
     except:
         print('Error Connecting to Database')
-#{os.getenv('DB_PASSWORD')}
+
 conn = get_db_connection()
 
 @app.route("/", methods=['GET'])
