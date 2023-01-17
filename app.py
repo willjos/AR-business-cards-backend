@@ -94,6 +94,25 @@ def view_card(id):
     except:
         return 'failed to scan card', 500
 
+@app.route("/view-collection", methods=['POST'])
+def view_collection():
+    data = request.json
+    user_name = data['username']
+    query = """
+    SELECT DISTINCT ON (card_id) users.username, collected.*, cards.*
+    FROM collected 
+    JOIN cards ON collected.card_id=cards.id
+    JOIN users ON collected.creator_id=users.id 
+    WHERE scanner_id=(SELECT id from users WHERE username=%s)
+    AND creator_id!=(SELECT id from users WHERE username=%s);
+    """
+    parameters = (user_name, user_name)
+    try:
+        collection_data = query_database(query, parameters)
+        return collection_data, 200
+    except:
+        return 'failed to fetch collection data', 500
+
 @app.route("/create-card", methods=['POST'])
 def create_card():
     data = request.json
