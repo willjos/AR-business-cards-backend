@@ -99,11 +99,15 @@ def view_collection():
     data = request.json
     user_name = data['username']
     query = """
-    SELECT DISTINCT ON (card_id) * FROM collected JOIN cards ON collected.card_id=cards.id 
-    WHERE scanner_id=(SELECT id from users WHERE username=%s);
+    SELECT DISTINCT ON (card_id) users.username, collected.*, cards.*
+    FROM collected 
+    JOIN cards ON collected.card_id=cards.id
+    JOIN users ON collected.creator_id=users.id 
+    WHERE scanner_id=(SELECT id from users WHERE username=%s)
+    AND creator_id!=(SELECT id from users WHERE username=%s);
     """
-    parameters = (user_name, )
-    try: 
+    parameters = (user_name, user_name)
+    try:
         collection_data = query_database(query, parameters)
         return collection_data, 200
     except:
