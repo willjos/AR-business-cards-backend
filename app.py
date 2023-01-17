@@ -99,10 +99,11 @@ def view_collection():
     data = request.json
     user_name = data['username']
     query = """
-    SELECT DISTINCT ON (card_id) users.username, collected.*, cards.*
-    FROM collected 
+    SELECT DISTINCT ON (card_id) users.username, collected.*, cards.*, count
+    FROM collected
     JOIN cards ON collected.card_id=cards.id
-    JOIN users ON collected.creator_id=users.id 
+    JOIN users ON collected.creator_id=users.id
+    JOIN (SELECT card_id, COUNT(*) FROM collected GROUP BY card_id) AS counts ON collected.card_id = counts.card_id
     WHERE scanner_id=(SELECT id from users WHERE username=%s)
     AND creator_id!=(SELECT id from users WHERE username=%s);
     """
