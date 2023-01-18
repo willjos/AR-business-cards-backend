@@ -82,12 +82,13 @@ def view_card(id):
     def insert_scan():
         data = request.json
         user_name = data['username']
-        query = """
-        INSERT INTO collected(card_id, creator_id, scanner_id, scan_timestamp)
-        VALUES (%s, (SELECT user_id FROM cards WHERE id=%s), (SELECT id FROM users WHERE username=%s), current_timestamp);
-        """
-        parameters = (id, id, user_name)
-        insert_database(query, parameters)
+        if (user_name):
+            query = """
+            INSERT INTO collected(card_id, creator_id, scanner_id, scan_timestamp)
+            VALUES (%s, (SELECT user_id FROM cards WHERE id=%s), (SELECT id FROM users WHERE username=%s), current_timestamp);
+            """
+            parameters = (id, id, user_name)
+            insert_database(query, parameters)
     try:
         insert_scan()
         return card_data, 200
