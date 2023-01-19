@@ -23,3 +23,11 @@ Repo containing API for AR-business-cards project.
 '/register-user' - POST request that receives JSON containing username and password. This will add a new user to the database (usernames must be unique).
 
 '/login' - POST request that receives JSON containing username and password. This will check if the username and password match an existing user entry in the database and either allow or deny permission to the site.
+
+## Testing
+
+load_dotenv() should be uncommented before running tests
+
+/tests/test_view-card and /tests/test_view-collection tests should be run independently to the rest of the tests.
+
+/tests/test_register-user username supplied must be updated to run successfully.
