@@ -88,7 +88,7 @@ def view_card(id):
             """
             parameters = (id, id, user_name)
             insert_database(query, parameters)
-    try:
+    try:    
         insert_scan()
         return card_data, 200
     except:
