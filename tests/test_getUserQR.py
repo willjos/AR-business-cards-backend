@@ -3,9 +3,9 @@ import json
 from app import app
 
 willsimms_firstQR = {
-    "id": 9,
-    "title": "TestEdit3"
-  }
+    "id": 58,
+    "title": "test title"
+}
 
 def test_willsimms(): # user willsimms returns 200 response, with correct expected data
     response = app.test_client().get('/getUserQR?username=willsimms')
