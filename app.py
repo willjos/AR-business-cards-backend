@@ -6,7 +6,7 @@ import os
 import bcrypt
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 app=Flask(__name__)
 CORS(app)
