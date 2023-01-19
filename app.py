@@ -19,11 +19,7 @@ conn = get_db_connection()
 
 @app.route("/", methods=['GET'])
 def index():
-    cur = conn.cursor(cursor_factory=pse.RealDictCursor)
-    cur.execute("SELECT * FROM users")
-    users_data = cur.fetchall()
-    cur.close()
-    return users_data
+    return "AR Business Cards Extra Secure Server"
 
 def query_database(query, search_param):
     with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cursor:
