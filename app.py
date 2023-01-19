@@ -3,7 +3,10 @@ import psycopg2.extras as pse
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-import bcrypt 
+import bcrypt
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app=Flask(__name__)
 CORS(app)
