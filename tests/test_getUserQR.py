@@ -12,6 +12,6 @@ def test_willsimms(): # user willsimms returns 200 response, with correct expect
     assert response.status == '200 OK'
     assert json.loads(response.data.decode('utf-8'))[0] == willsimms_firstQR
 
-def test_nonUser(): # user notauser returns 404 response.
+def test_non_user(): # user notauser returns 404 response.
     response = app.test_client().get('/getUserQR?username=notauser')
     assert response.status == '404 NOT FOUND'
