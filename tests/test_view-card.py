@@ -10,7 +10,7 @@ card_6_response = {
     "user_id": 22
 }
 
-def test_willsimms(): # viewing card 6 is successful
+def test_willsimms_view_card(): # viewing card 6 is successful
     response = app.test_client().post('/view-card/6', json={"username": "willsimms"})
     assert response.status == '200 OK'
     assert json.loads(response.data.decode('utf-8'))[0] == card_6_response
