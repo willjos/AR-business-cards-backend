@@ -4,7 +4,9 @@ from app import app
 
 willsimms_firstQR = {
     "id": 58,
-    "title": "test title"
+    "title": "test title",
+    "colour": "#fff",
+    "content": "test content"
 }
 
 def test_willsimms(): # user willsimms returns 200 response, with correct expected data

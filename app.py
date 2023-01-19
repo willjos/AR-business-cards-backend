@@ -57,13 +57,11 @@ def getUserQR():
         user_name = args["username"]
         qr_code = query_database(
                 """WITH userQR AS ( 
-                    SELECT cards.user_id,
-                    cards.title, 
-                    cards.id, 
+                    SELECT cards.*, 
                     users.username 
                     FROM cards, users WHERE users.id=cards.user_id
                 ) 
-                SELECT id, title from userQR WHERE username=%s""", (user_name,))
+                SELECT id, title, colour, content from userQR WHERE username=%s""", (user_name,))
         print(qr_code)
         if(qr_code == []):
             return "404, failed: user does not exist", 404 
