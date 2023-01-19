@@ -1,0 +1,10 @@
+import pytest
+import json
+from app import app
+
+
+
+def test_card6(): # user willsimms returns 200 response, with correct expected data
+    response = app.test_client().get('https://ar-business-cards-backend.herokuapp.com/getUserQR?username=willsimms')
+    assert response.status == '200 OK'
+    assert json.loads(response.data.decode('utf-8'))[0] == willsimms_firstQR
