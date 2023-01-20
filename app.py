@@ -5,7 +5,7 @@ from flask_cors import CORS
 import os
 import bcrypt
 from dotenv import load_dotenv
- 
+
 # load_dotenv() #uncomment to run tests
 
 app=Flask(__name__)
